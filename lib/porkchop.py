@@ -52,7 +52,6 @@ class GetHandler(BaseHTTPRequestHandler):
     return
 
   def str_to_class(self, module, klass):
-    print module, klass
     try:
       identifier = getattr(sys.modules[module], klass)
     except AttributeError:
