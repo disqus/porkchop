@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import __builtin__
+from optparse import OptionParser
+import glob, os, sys
+
+loadpath = os.path.dirname(os.path.abspath(__file__)) + '/../lib'
+if loadpath not in sys.path:
+  sys.path.insert(0, loadpath)
+
+PLUGIN_DIR = '/usr/share/porkchop/plugins'
+LISTEN_PORT = 5000
+
+parser = OptionParser()
+
+parser.add_option('--plugindir', dest='plugindir',
+                  default=PLUGIN_DIR,
+                  help='Load plugins from DIR', metavar='DIR')
+parser.add_option('-p', type="int", dest='listen_port',
+                  default=LISTEN_PORT,
+                  help='Bind to PORT', metavar='PORT')
+
+(options, args) = parser.parse_args()
+
+sys.path.insert(0, options.plugindir)
+
+def import_plugins(dir):
+  modules = []
+  for infile in glob.glob(os.path.join(dir, '*.py')):
+    if not infile == '__init__.py':
+      modules.append(__import__(os.path.splitext(os.path.split(infile)[1])[0]))
+  return(modules)
+
+if __name__ == '__main__':
+  from BaseHTTPServer import HTTPServer
+  from porkchop import *
+  __builtin__.plugins = import_plugins(options.plugindir)
+
+  server = HTTPServer(('localhost', options.listen_port), GetHandler)
+  print 'Starting server, use <Ctrl-C> to stop'
+  server.serve_forever()
