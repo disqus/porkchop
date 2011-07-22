@@ -27,8 +27,6 @@ class GetHandler(BaseHTTPRequestHandler):
         (x, data[x]) for x in data.iterkeys()) + '\n'
 
   def do_GET(self):
-    global plugins
-    print plugins
     data = {}
     data['time'] = '%d' % time.time()
     path = urlparse.urlparse(self.path)
@@ -36,7 +34,6 @@ class GetHandler(BaseHTTPRequestHandler):
 
     module = path.path.split('/')[1]
     class_name = '%sPlugin' % module.capitalize()
-    exec('from %s import %s' % (module, class_name))
 
     try:
       loader = self.str_to_class(module, class_name)()
