@@ -12,12 +12,16 @@ import porkchop
 from server import GetHandler
 
 PLUGIN_DIR = '/usr/share/porkchop/plugins'
+LISTEN_ADDRESS=''
 LISTEN_PORT = 5000
 
 parser = OptionParser()
-parser.add_option('--plugindir', dest='plugindir',
+parser.add_option('-d', dest='plugindir',
                   default=PLUGIN_DIR,
                   help='Load plugins from DIR', metavar='DIR')
+parser.add_option('-s', dest='listen_address',
+                  default=LISTEN_ADDRESS,
+                  help='Bind to ADDRESS', metavar='ADDRESS')
 parser.add_option('-p', type="int", dest='listen_port',
                   default=LISTEN_PORT,
                   help='Bind to PORT', metavar='PORT')
@@ -28,6 +32,6 @@ if __name__ == '__main__':
   loader = porkchop.PorkchopPluginLoader()
   porkchop.plugins = loader.plugins(options.plugindir)
 
-  server = HTTPServer(('', options.listen_port), GetHandler)
-  print 'Starting server, use <Ctrl-C> to stop'
+  server = HTTPServer((options.listen_address, options.listen_port),
+    GetHandler)
   server.serve_forever()
