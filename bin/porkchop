@@ -8,7 +8,7 @@ loadpath = os.path.dirname(os.path.abspath(__file__)) + '/../lib'
 if loadpath not in sys.path:
   sys.path.insert(0, loadpath)
 
-from porkchop import *
+import porkchop
 from server import GetHandler
 
 PLUGIN_DIR = '/usr/share/porkchop/plugins'
@@ -25,8 +25,8 @@ parser.add_option('-p', type="int", dest='listen_port',
 (options, args) = parser.parse_args()
 
 if __name__ == '__main__':
-  loader = PorkchopPluginLoader()
-  plugins = loader.plugins(options.plugindir)
+  loader = porkchop.PorkchopPluginLoader()
+  porkchop.plugins = loader.plugins(options.plugindir)
 
   server = HTTPServer(('', options.listen_port), GetHandler)
   print 'Starting server, use <Ctrl-C> to stop'

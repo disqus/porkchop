@@ -5,6 +5,8 @@ import time
 import types
 import urlparse
 
+import porkchop
+
 class GetHandler(BaseHTTPRequestHandler):
   def format_body(self, fmt, data):
     if fmt == 'json':

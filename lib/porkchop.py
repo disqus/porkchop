@@ -1,6 +1,8 @@
 import glob, os, sys
 import time
 
+plugins = []
+
 class Porkchop(object):
   def __init__(self):
     self.refresh = 5
