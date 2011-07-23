@@ -5,7 +5,7 @@ import time
 import types
 import urlparse
 
-class Porkchop():
+class Porkchop(object):
   def __init__(self):
     self.refresh = 5
     self.last_refresh = None
