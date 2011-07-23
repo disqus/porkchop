@@ -26,7 +26,8 @@ class PorkchopPluginHandler(object):
     modules = []
 
     for infile in glob.glob(os.path.join(directory, '*.py')):
-      if not infile == '__init__.py':
+      if not os.path.basename(infile) == '__init__.py':
+        print infile
         modules.append(__import__(os.path.splitext(os.path.split(infile)[1])[0]))
 
     return modules
