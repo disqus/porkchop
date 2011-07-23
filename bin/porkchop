@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
+from BaseHTTPServer import HTTPServer
 from optparse import OptionParser
 import os, sys
 
 loadpath = os.path.dirname(os.path.abspath(__file__)) + '/../lib'
 if loadpath not in sys.path:
   sys.path.insert(0, loadpath)
+
+from porkchop import *
+from server import GetHandler
 
 PLUGIN_DIR = '/usr/share/porkchop/plugins'
 LISTEN_PORT = 5000
@@ -19,10 +23,6 @@ parser.add_option('-p', type="int", dest='listen_port',
                   help='Bind to PORT', metavar='PORT')
 
 (options, args) = parser.parse_args()
-
-from BaseHTTPServer import HTTPServer
-from porkchop import *
-from pluginloader import *
 
 if __name__ == '__main__':
   loader = PorkchopPluginLoader()
