@@ -28,6 +28,6 @@ if __name__ == '__main__':
   loader = PorkchopPluginLoader()
   plugins = loader.plugins(options.plugindir)
 
-  server = HTTPServer(('localhost', options.listen_port), GetHandler)
+  server = HTTPServer(('', options.listen_port), GetHandler)
   print 'Starting server, use <Ctrl-C> to stop'
   server.serve_forever()

@@ -10,4 +10,4 @@ class PorkchopPluginLoader():
       if not infile == '__init__.py':
         modules.append(__import__(os.path.splitext(os.path.split(infile)[1])[0]))
 
-    return(modules)
+    return modules

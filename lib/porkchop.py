@@ -23,8 +23,19 @@ class GetHandler(BaseHTTPRequestHandler):
     if fmt == 'json':
       return json.dumps(data) + '\n'
     else:
-      return '\n'.join('%s: %s' %
-        (x, data[x]) for x in data.iterkeys()) + '\n'
+      return '\n'.join(self.json_path(data)) + '\n'
+
+  def json_path(self, data):
+    results = []
+    def path_helper(data, path, results):
+      for key, val in data.iteritems():
+        if type(val) == str:
+          results.append(('%s %s' % ('/'.join((path, key)), val)))
+        elif type(val) == dict:
+          path_helper(val, '/'.join((path, key)), results)
+
+    path_helper(data, '', results)
+    return results
 
   def do_GET(self):
     data = {}
@@ -39,7 +50,7 @@ class GetHandler(BaseHTTPRequestHandler):
       loader = self.str_to_class(module, class_name)()
 
       if loader.should_refresh():
-        data = loader.data()
+        data[module] = loader.data()
       else:
         data = {}
     except:
