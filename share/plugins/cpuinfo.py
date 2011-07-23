@@ -1,7 +1,7 @@
-from porkchop import Porkchop
+from porkchop import PorkchopPlugin
 import re
 
-class CpuinfoPlugin(Porkchop):
+class CpuinfoPlugin(PorkchopPlugin):
   def data(self):
     d1 = {}
     p = re.compile('(\w+)\s+:\s+(\w+)')

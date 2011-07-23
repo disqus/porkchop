@@ -1,8 +1,8 @@
-from porkchop import Porkchop
+from porkchop import PorkchopPlugin
 import re
 import subprocess
 
-class FacterPlugin(Porkchop):
+class FacterPlugin(PorkchopPlugin):
   def data(self):
     d1 = {}
     p = re.compile('(.*?)\s=>\s(.*)')

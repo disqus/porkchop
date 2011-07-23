@@ -29,8 +29,7 @@ parser.add_option('-p', type="int", dest='listen_port',
 (options, args) = parser.parse_args()
 
 if __name__ == '__main__':
-  loader = porkchop.PorkchopPluginLoader()
-  porkchop.plugins = loader.plugins(options.plugindir)
+  porkchop.PorkchopPluginHandler(options.plugindir)
 
   server = HTTPServer((options.listen_address, options.listen_port),
     GetHandler)

@@ -1,5 +1,5 @@
-from porkchop import Porkchop
+from porkchop import PorkchopPlugin
 
-class ThingPlugin(Porkchop):
+class ThingPlugin(PorkchopPlugin):
   def data(self):
     return {'fred': 'wilma', 'barney': 'betty'}

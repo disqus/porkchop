@@ -1,11 +1,9 @@
 import glob, os, sys
 import time
 
-plugins = []
-
-class Porkchop(object):
+class PorkchopPlugin(object):
   def __init__(self):
-    self.refresh = 5
+    self.refresh = 60
     self.last_refresh = None
 
   def should_refresh(self):
@@ -16,12 +14,18 @@ class Porkchop(object):
     else:
       return True
 
-class PorkchopPluginLoader():
-  def plugins(self, d):
-    sys.path.insert(0, d)
+class PorkchopPluginHandler(object):
+  plugins = []
+
+  def __init__(self, directory = None):
+    if directory:
+      PorkchopPluginHandler.plugins = self.load_plugins(directory)
+
+  def load_plugins(self, directory):
+    sys.path.insert(0, directory)
     modules = []
 
-    for infile in glob.glob(os.path.join(d, '*.py')):
+    for infile in glob.glob(os.path.join(directory, '*.py')):
       if not infile == '__init__.py':
         modules.append(__import__(os.path.splitext(os.path.split(infile)[1])[0]))
 
