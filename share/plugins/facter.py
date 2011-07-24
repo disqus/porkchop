@@ -3,7 +3,7 @@ import re
 import subprocess
 
 class FacterPlugin(PorkchopPlugin):
-  def data(self):
+  def get_data(self):
     d1 = {}
     p = re.compile('(.*?)\s=>\s(.*)')
 

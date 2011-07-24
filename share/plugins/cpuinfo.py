@@ -2,7 +2,7 @@ from porkchop import PorkchopPlugin
 import re
 
 class CpuinfoPlugin(PorkchopPlugin):
-  def data(self):
+  def get_data(self):
     d1 = {}
     p = re.compile('(\w+)\s+:\s+(\w+)')
     f = open('/proc/cpuinfo', 'r')

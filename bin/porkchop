@@ -2,13 +2,13 @@
 
 from BaseHTTPServer import HTTPServer
 from optparse import OptionParser
-import os, sys
+import os, sys, time
 
 loadpath = os.path.dirname(os.path.abspath(__file__)) + '/../lib'
 if loadpath not in sys.path:
   sys.path.insert(0, loadpath)
 
-import porkchop
+from porkchop import PorkchopPluginHandler
 from server import GetHandler
 
 PLUGIN_DIR = '/usr/share/porkchop/plugins'
@@ -29,8 +29,7 @@ parser.add_option('-p', type="int", dest='listen_port',
 (options, args) = parser.parse_args()
 
 if __name__ == '__main__':
-  porkchop.PorkchopPluginHandler(options.plugindir)
-
+  PorkchopPluginHandler(options.plugindir)
   server = HTTPServer((options.listen_address, options.listen_port),
     GetHandler)
   server.serve_forever()
