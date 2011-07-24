@@ -18,28 +18,27 @@ class GetHandler(BaseHTTPRequestHandler):
     results = []
     def path_helper(data, path, results):
       for key, val in data.iteritems():
-        if type(val) == str:
-          results.append(('%s %s' % ('/'.join((path, key)), val)))
-        elif type(val) == dict:
+        if type(val) == dict:
           path_helper(val, '/'.join((path, key)), results)
+        else:
+          results.append(('%s %s' % ('/'.join((path, key)), val)))
 
     path_helper(data, '', results)
     return results
 
   def do_GET(self):
     data = {}
-    data['time'] = '%d' % time.time()
     path = urlparse.urlparse(self.path)
-    fmt = path.query
-
     module = path.path.split('/')[1]
 
     try:
       plugin = PorkchopPluginHandler.plugins[module]()
+      self.send_response(200)
+      self.end_headers()
+      self.wfile.write(self.format_body(path.query, plugin.data))
     except:
-      print 'Could not load plugin: %s' % module, sys.exc_info()[0]
+      self.send_response(404)
+      self.end_headers()
+      self.wfile.write(self.format_body(path.query, {}))
 
-    self.send_response(200)
-    self.end_headers()
-    self.wfile.write(self.format_body(fmt, plugin.data))
     return

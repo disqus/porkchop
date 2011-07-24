@@ -11,7 +11,6 @@ class PorkchopPlugin(object):
   @property
   def data(self):
     if self.should_refresh():
-      print 'Refreshing...'
       self.__class__._lastrefresh = time.time()
       self.data = self.get_data()
 
@@ -20,6 +19,7 @@ class PorkchopPlugin(object):
   @data.setter
   def data(self, value):
     self.__class__._data = value
+    self.__class__._data['refreshtime'] = int(self.__class__._lastrefresh)
 
   def should_refresh(self):
     if self.__class__._lastrefresh != 0:
