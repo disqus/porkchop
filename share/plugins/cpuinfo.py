@@ -1,6 +1,6 @@
 import re
 
-from porkchop import PorkchopPlugin
+from porkchop.plugin import PorkchopPlugin
 
 class CpuinfoPlugin(PorkchopPlugin):
   def get_data(self):

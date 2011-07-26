@@ -1,4 +1,4 @@
-from porkchop import PorkchopPlugin
+from porkchop.plugin import PorkchopPlugin
 
 class ThingPlugin(PorkchopPlugin):
   def __init__(self):

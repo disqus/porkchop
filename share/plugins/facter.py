@@ -1,7 +1,7 @@
 import re
 from subprocess import Popen, PIPE
 
-from porkchop import PorkchopPlugin
+from porkchop.plugin import PorkchopPlugin
 
 class FacterPlugin(PorkchopPlugin):
   def get_data(self):

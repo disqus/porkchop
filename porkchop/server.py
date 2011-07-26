@@ -5,7 +5,7 @@ import time
 import types
 import urlparse
 
-from porkchop import PorkchopPluginHandler
+from porkchop.plugin import PorkchopPluginHandler
 
 class GetHandler(BaseHTTPRequestHandler):
   def format_body(self, fmt, data):
