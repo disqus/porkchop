@@ -1,14 +1,15 @@
-from porkchop import PorkchopPlugin
 import re
+
+from porkchop import PorkchopPlugin
 
 class CpuinfoPlugin(PorkchopPlugin):
   def get_data(self):
     d1 = {}
-    p = re.compile('(\w+)\s+:\s+(\w+)')
+    r1 = re.compile('(\w+)\s+:\s+(\w+)')
     f = open('/proc/cpuinfo', 'r')
 
     for line in f:
-      match = p.match(line)
+      match = r1.match(line)
       if match:
         k = match.group(1)
         v = match.group(2)
