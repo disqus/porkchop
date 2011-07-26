@@ -35,7 +35,7 @@ class GetHandler(BaseHTTPRequestHandler):
       plugin = PorkchopPluginHandler.plugins[module]()
       self.send_response(200)
       self.end_headers()
-      self.wfile.write(self.format_body(path.query, plugin.data))
+      self.wfile.write(self.format_body(path.query, {module: plugin.data}))
     except:
       self.send_response(404)
       self.end_headers()
