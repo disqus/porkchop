@@ -58,7 +58,7 @@ Writing Plugins
 It's pretty easy to write a new plugin. They're just Python modules with some common attributes:
 
 * A plugin must subclass ```porkchop.plugin.PorkchopPlugin```.
-* The plugin's class must be suffixed with `Plugin'. Its actual file name in the plugin directory should also match the prefix. For example, ```FooPlugin``` would be in the file ```foo.py```
+* The plugin's class must be suffixed with ```Plugin```. Its actual file name in the plugin directory should also match the prefix. For example, ```FooPlugin``` would be in the file ```foo.py```
 * The plugin's class must contain a method called ```get_data``` that returns a dictionary of the information to be displayed.
 
 By default, a plugin's ```get_data``` method will only be called if the data is more then 60 seconds old. This can be changed on a per-plugin basis by setting ```self.refresh``` in the class's ```___init___``` method.
