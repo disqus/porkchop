@@ -46,3 +46,19 @@ It can also respond with JSON:
     scott@beatbox:~% curl http://localhost:3000/cpuinfo?json
     {"cpuinfo": {"processor2": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6384", "hlt_bug": "no", "apicid": "2", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}, "processor3": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6384", "hlt_bug": "no", "apicid": "3", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}, "processor0": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6382", "hlt_bug": "no", "apicid": "0", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}, "processor1": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6384", "hlt_bug": "no", "apicid": "1", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}}, "time": "1311389934"}
     scott@beatbox:~% 
+
+Installation
+------------
+
+    python setup.py install
+
+Writing Plugins
+---------------
+
+It's pretty easy to write a new plugin. They're just Python modules with some common attributes:
+
+* A plugin must subclass ```porkchop.plugin.PorkchopPlugin```.
+* The plugin's class must be suffixed with `Plugin'. Its actual file name in the plugin directory should also match the prefix. For example, ```FooPlugin``` would be in the file ```foo.py```
+* The plugin's class must contain a method called ```get_data``` that returns a dictionary of the information to be displayed.
+
+By default, a plugin's ```get_data``` method will only be called if the data is more then 60 seconds old. This can be changed on a per-plugin basis by setting ```self.refresh``` in the class's ```___init___``` method.
