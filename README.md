@@ -6,7 +6,7 @@ for it and it responds with the data based on your request.
 
 Here is an example:
 
-    scott@beatbox:~% curl http://localhost:3000/cpuinfo
+    scott@beatbox:~% curl http://localhost:5000/cpuinfo
     /cpuinfo/processor2/fpu yes 
     /cpuinfo/processor2/f00f_bug no
     /cpuinfo/processor2/cache_alignment 64
@@ -43,7 +43,7 @@ Here is an example:
 
 It can also respond with JSON:
 
-    scott@beatbox:~% curl http://localhost:3000/cpuinfo?json
+    scott@beatbox:~% curl http://localhost:5000/cpuinfo?json
     {"cpuinfo": {"processor2": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6384", "hlt_bug": "no", "apicid": "2", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}, "processor3": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6384", "hlt_bug": "no", "apicid": "3", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}, "processor0": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6382", "hlt_bug": "no", "apicid": "0", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}, "processor1": {"fpu": "yes", "f00f_bug": "no", "cache_alignment": "64", "vendor_id": "AuthenticAMD", "flags": "fpu", "bogomips": "6384", "hlt_bug": "no", "apicid": "1", "fpu_exception": "yes", "stepping": "3", "wp": "yes", "siblings": "4", "model": "4", "coma_bug": "no", "fdiv_bug": "no"}}, "time": "1311389934"}
     scott@beatbox:~% 
 
