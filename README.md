@@ -1,7 +1,7 @@
 Porkchop
 ========
 
-Porkchop is a simple network-based dictionary server. You write plugins
+Porkchop is a simple network-based system information server. You write plugins
 for it and it responds with the data based on your request.
 
 Here is an example:
