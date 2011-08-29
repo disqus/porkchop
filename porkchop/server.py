@@ -32,10 +32,14 @@ class GetHandler(BaseHTTPRequestHandler):
     module = path.path.split('/')[1]
 
     try:
-      plugin = PorkchopPluginHandler.plugins[module]()
       self.send_response(200)
       self.end_headers()
-      self.wfile.write(self.format_body(path.query, {module: plugin.data}))
+      if module:
+        plugin = PorkchopPluginHandler.plugins[module]()
+        self.wfile.write(self.format_body(path.query, {module: plugin.data}))
+      else:
+        for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
+          self.wfile.write(self.format_body(path.query, {plugin_name: plugin().data}))
     except:
       self.send_response(404)
       self.end_headers()
