@@ -1,9 +1,5 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
 import json
-import os
-import sys
-import time
-import types
 import urlparse
 
 from porkchop.plugin import PorkchopPluginHandler
