@@ -1,5 +1,6 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
 import json
+import os
 import sys
 import time
 import types
@@ -28,21 +29,37 @@ class GetHandler(BaseHTTPRequestHandler):
 
   def do_GET(self):
     data = {}
-    path = urlparse.urlparse(self.path)
-    module = path.path.split('/')[1]
+    formats = {'json': 'application/json', 'text': 'text/plain'}
+    request = urlparse.urlparse(self.path)
+
+    try:
+      (path, fmt) = request.path.split('.')
+    except ValueError:
+      path = request.path
+      try:
+        if self.headers['accept'] == 'application/json':
+          fmt = 'json'
+        elif self.headers['accept'] in ['text/plain', '*/*']:
+          fmt = 'text'
+      except KeyError:
+        fmt = 'text'
+
+    module = path.split('/')[1]
 
     try:
       self.send_response(200)
+      self.send_header('Content-Type', formats[fmt])
       self.end_headers()
       if module:
         plugin = PorkchopPluginHandler.plugins[module]()
-        self.wfile.write(self.format_body(path.query, {module: plugin.data}))
+        self.wfile.write(self.format_body(fmt, {module: plugin.data}))
       else:
         for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
-          self.wfile.write(self.format_body(path.query, {plugin_name: plugin().data}))
+          self.wfile.write(self.format_body(fmt, {plugin_name: plugin().data}))
     except:
       self.send_response(404)
+      self.send_header('Content-Type', formats[fmt])
       self.end_headers()
-      self.wfile.write(self.format_body(path.query, {}))
+      self.wfile.write(self.format_body(fmt, {}))
 
     return
