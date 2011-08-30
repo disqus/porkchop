@@ -1,8 +1,8 @@
-from BaseHTTPServer import HTTPServer
 from optparse import OptionParser
 from server import GetHandler
 
 from porkchop.plugin import PorkchopPluginHandler
+from porkchop.server import GetHandler, ThreadedHTTPServer
 
 def main():
   plugin_dir = '/usr/share/porkchop/plugins'
@@ -25,6 +25,6 @@ def main():
   (options, args) = parser.parse_args()
 
   PorkchopPluginHandler(options.plugindir)
-  server = HTTPServer((options.listen_address, options.listen_port),
-    GetHandler)
+  server = ThreadedHTTPServer((options.listen_address, options.listen_port),
+                              GetHandler)
   server.serve_forever()

@@ -1,5 +1,6 @@
-from BaseHTTPServer import BaseHTTPRequestHandler
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
+from SocketServer import ThreadingMixIn
 import urlparse
 
 from porkchop.plugin import PorkchopPluginHandler
@@ -59,3 +60,6 @@ class GetHandler(BaseHTTPRequestHandler):
       self.wfile.write(self.format_body(fmt, {}))
 
     return
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+  """ do stuff """
