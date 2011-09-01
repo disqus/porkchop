@@ -19,7 +19,8 @@ class GetHandler(BaseHTTPRequestHandler):
         if type(val) == dict:
           path_helper(val, '/'.join((path, key)), results)
         else:
-          results.append(('%s %s' % ('/'.join((path, key)), val)))
+          results.append(('%s %s' % (('/'.join((path, key)))\
+            .replace('.','_'), val)))
 
     path_helper(data, '', results)
     return results
