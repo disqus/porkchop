@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 from porkchop.plugin import PorkchopPlugin
 
 
-class RabbitMQPlugin(PorkchopPlugin):
+class RabbitmqPlugin(PorkchopPlugin):
   def get_vhosts(self):
     return Popen(
       "/usr/sbin/rabbitmqctl list_vhosts",
