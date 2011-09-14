@@ -3,7 +3,7 @@
 import glob
 from setuptools import setup, find_packages
 
-version = '0.3'
+version = '0.4'
 
 setup(name='porkchop',
   version=version,
@@ -21,7 +21,7 @@ setup(name='porkchop',
   install_requires=[],
   entry_points={
     'console_scripts': [
-      'porkchop = porkchop.commandline:main'
+      'porkchop = porkchop.commandline:main',
       'porkchop-collector = porkchop.commandline:collector'
     ],
   },
