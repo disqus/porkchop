@@ -29,15 +29,17 @@ class GetHandler(BaseHTTPRequestHandler):
     data = {}
     formats = {'json': 'application/json', 'text': 'text/plain'}
     request = urlparse.urlparse(self.path)
+    resp_body = []
 
     try:
       (path, fmt) = request.path.split('.')
+      if fmt not in formats.keys(): fmt = 'text'
     except ValueError:
       path = request.path
       try:
         if self.headers['accept'] == 'application/json':
           fmt = 'json'
-        elif self.headers['accept'] in ['text/plain', '*/*']:
+        else:
           fmt = 'text'
       except KeyError:
         fmt = 'text'
@@ -45,15 +47,16 @@ class GetHandler(BaseHTTPRequestHandler):
     module = path.split('/')[1]
 
     try:
+      if module:
+        plugin = PorkchopPluginHandler.plugins[module]()
+        resp_body.append(self.format_body(fmt, {module: plugin.data}))
+      else:
+        for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
+          resp_body.append(self.format_body(fmt, {plugin_name: plugin().data}))
       self.send_response(200)
       self.send_header('Content-Type', formats[fmt])
       self.end_headers()
-      if module:
-        plugin = PorkchopPluginHandler.plugins[module]()
-        self.wfile.write(self.format_body(fmt, {module: plugin.data}))
-      else:
-        for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
-          self.wfile.write(self.format_body(fmt, {plugin_name: plugin().data}))
+      self.wfile.write('\n'.join(resp_body))
     except:
       self.send_response(404)
       self.send_header('Content-Type', formats[fmt])
