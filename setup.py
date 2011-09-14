@@ -22,6 +22,7 @@ setup(name='porkchop',
   entry_points={
     'console_scripts': [
       'porkchop = porkchop.commandline:main'
+      'porkchop-collector = porkchop.commandline:collector'
     ],
   },
   data_files=[
