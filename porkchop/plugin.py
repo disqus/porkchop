@@ -1,6 +1,8 @@
 import glob, os, sys
 import time
 
+import porkchop.plugins
+
 class PorkchopPlugin(object):
   _lastrefresh = 0
   _data = {}
@@ -34,8 +36,10 @@ class PorkchopPluginHandler(object):
   plugins = {}
 
   def __init__(self, directory = None):
+    PorkchopPluginHandler.plugins.update(self.load_plugins(os.path.dirname(porkchop.plugins.__file__)))
+
     if directory:
-      PorkchopPluginHandler.plugins = self.load_plugins(directory)
+      PorkchopPluginHandler.plugins.update(self.load_plugins(directory))
 
   def load_plugins(self, directory):
     plugins = {}
