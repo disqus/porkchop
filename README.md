@@ -50,7 +50,12 @@ It can also respond with JSON via .json file extension or setting the ```Accept:
 Installation
 ------------
 
+    pip install porkchop
+
+or
+
     python setup.py install
+
 
 Writing Plugins
 ---------------
@@ -62,3 +67,5 @@ It's pretty easy to write a new plugin. They're just Python modules with some co
 * The plugin's class must contain a method called ```get_data``` that returns a dictionary of the information to be displayed.
 
 By default, a plugin's ```get_data``` method will only be called if the data is more then 60 seconds old. This can be changed on a per-plugin basis by setting ```self.refresh``` in the class's ```___init___``` method.
+
+These plugins can be placed in any directory you choose, and loaded by passing the -d <dir> option to porkchop.
