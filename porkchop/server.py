@@ -7,11 +7,11 @@ import urlparse
 from porkchop.plugin import PorkchopPluginHandler
 
 class GetHandler(BaseHTTPRequestHandler):
-  def format_body(self, fmt, data):
+  def format_output(self, fmt, data):
     if fmt == 'json':
-      return json.dumps(data) + '\n'
+      return json.dumps(data)
     else:
-      return '\n'.join(self.json_path(data)) + '\n'
+      return '\n'.join(self.json_path(data))
 
   def json_path(self, data):
     results = []
@@ -50,11 +50,11 @@ class GetHandler(BaseHTTPRequestHandler):
     try:
       if module:
         plugin = PorkchopPluginHandler.plugins[module]()
-        resp_body.append(self.format_body(fmt, {module: plugin.data}))
+        resp_body.append(self.format_output(fmt, {module: plugin.data}))
       else:
         try:
           for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
-            resp_body.append(self.format_body(fmt, {plugin_name: plugin().data}))
+            resp_body.append(self.format_output(fmt, {plugin_name: plugin().data}))
         except:
           self.log_error('Error loading plugin: name=%s exception=%s', plugin_name, sys.exc_info())
       self.send_response(200)
@@ -66,7 +66,7 @@ class GetHandler(BaseHTTPRequestHandler):
       self.send_response(404)
       self.send_header('Content-Type', formats[fmt])
       self.end_headers()
-      self.wfile.write(self.format_body(fmt, {}))
+      self.wfile.write(self.format_output(fmt, {}))
 
     return
 
