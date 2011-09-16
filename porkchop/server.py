@@ -1,6 +1,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
 from SocketServer import ThreadingMixIn
+import sys
 import urlparse
 
 from porkchop.plugin import PorkchopPluginHandler
@@ -51,13 +52,17 @@ class GetHandler(BaseHTTPRequestHandler):
         plugin = PorkchopPluginHandler.plugins[module]()
         resp_body.append(self.format_body(fmt, {module: plugin.data}))
       else:
-        for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
-          resp_body.append(self.format_body(fmt, {plugin_name: plugin().data}))
+        try:
+          for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
+            resp_body.append(self.format_body(fmt, {plugin_name: plugin().data}))
+        except:
+          self.log_error('Error loading plugin: name=%s exception=%s', plugin_name, sys.exc_info())
       self.send_response(200)
       self.send_header('Content-Type', formats[fmt])
       self.end_headers()
-      self.wfile.write('\n'.join(resp_body))
+      self.wfile.write('\n'.join(resp_body) + '\n')
     except:
+      self.log_error('Error: %s', sys.exc_info())
       self.send_response(404)
       self.send_header('Content-Type', formats[fmt])
       self.end_headers()
