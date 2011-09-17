@@ -1,10 +1,7 @@
 import logging
 from optparse import OptionParser
-from server import GetHandler
-import sys
 
 from porkchop.plugin import PorkchopPluginHandler
-from porkchop.server import GetHandler, ThreadedHTTPServer
 
 def coerce_number(s):
   try:
@@ -24,6 +21,8 @@ def get_logger(level = logging.INFO):
   return logger
 
 def main():
+  from server import GetHandler
+  from porkchop.server import GetHandler, ThreadedHTTPServer
   plugin_dir = '/usr/share/porkchop/plugins'
   listen_address = ''
   listen_port = 5000
