@@ -30,7 +30,6 @@ class GetHandler(BaseHTTPRequestHandler):
     data = {}
     formats = {'json': 'application/json', 'text': 'text/plain'}
     request = urlparse.urlparse(self.path)
-    resp_body = []
 
     try:
       (path, fmt) = request.path.split('.')
@@ -50,17 +49,21 @@ class GetHandler(BaseHTTPRequestHandler):
     try:
       if module:
         plugin = PorkchopPluginHandler.plugins[module]()
-        resp_body.append(self.format_output(fmt, {module: plugin.data}))
+        data.update({module: plugin.data})
       else:
-        try:
-          for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
-            resp_body.append(self.format_output(fmt, {plugin_name: plugin().data}))
-        except:
-          self.log_error('Error loading plugin: name=%s exception=%s', plugin_name, sys.exc_info())
-      self.send_response(200)
-      self.send_header('Content-Type', formats[fmt])
-      self.end_headers()
-      self.wfile.write('\n'.join(resp_body) + '\n')
+        for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
+          try:
+            data.update({plugin_name: plugin().data})
+          except:
+            self.log_error('Error loading plugin: name=%s exception=%s', plugin_name, sys.exc_info())
+
+      if len(data):
+        self.send_response(200)
+        self.send_header('Content-Type', formats[fmt])
+        self.end_headers()
+        self.wfile.write(self.format_output(fmt, data) + '\n')
+      else:
+        raise Exception('Unable to load any plugins')
     except:
       self.log_error('Error: %s', sys.exc_info())
       self.send_response(404)

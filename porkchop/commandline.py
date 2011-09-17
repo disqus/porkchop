@@ -1,9 +1,16 @@
 import logging
 from optparse import OptionParser
 from server import GetHandler
+import sys
 
 from porkchop.plugin import PorkchopPluginHandler
 from porkchop.server import GetHandler, ThreadedHTTPServer
+
+def coerce_number(s):
+  try:
+    return int(s)
+  except:
+    return float(s)
 
 def get_logger(level = logging.INFO):
   logger = logging.getLogger('porkchop')
@@ -51,7 +58,6 @@ def main():
   server.serve_forever()
 
 def collector():
-  import json
   import requests
   import socket
   import sys
@@ -102,10 +108,7 @@ def collector():
     logger = get_logger()
 
   if not options.noop:
-    logger.info('Connecting to carbon on %s:%d',
-                options.carbon_host, options.carbon_port)
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((options.carbon_host, options.carbon_port))
+    carbon = Carbon(options.carbon_host, options.carbon_port, logger)
 
   while True:
     try:
@@ -115,27 +118,47 @@ def collector():
       lines = []
       now = int(time.time())
       for line in r.content.strip('\n').splitlines():
-        (key, val) = line.lstrip('/').split(' ')
+        (key, val) = line.lstrip('/').split(' ', 1)
         key = '.'.join([options.prefix, key.replace('/', '.')])
         try:
-          lines.append('%s %s %d' % (key, val, now))
+          if not options.noop:
+            carbon.data.append((key, coerce_number(val), now))
         except:
           pass
 
-      if options.noop:
-        for line in lines:
-          logger.debug(line)
-      else:
-        logger.debug('Sending data to carbon...')
-        sock.sendall('\n'.join(lines) + '\n')
-    except socket.error:
-      logger.warning('Got disconnected from carbon, reconnecting...')
-      logger.info('Connecting to carbon on %s:%d',
-                  options.carbon_host, options.carbon_port)
-      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      sock.connect((options.carbon_host, options.carbon_port))
+      if not options.noop:
+        carbon.send()
     except:
       logger.error('Got bad response code from porkchop: %s', sys.exc_info()[1])
 
     logger.debug('Sleeping for %d', options.interval)
     time.sleep(options.interval)
+
+class Carbon(object):
+  def __init__(self, host, port, logger):
+    self.data = []
+    self.host = host
+    self.port = port
+    self.logger = logger
+    try:
+      self.sock = self._connect()
+    except socket.error:
+      self.logger.fatal('Unable to connect to carbon.')
+
+  def _connect(self):
+    import socket
+    self.logger.info('Connecting to carbon on %s:%d', self.host, self.port)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((self.host, self.port))
+
+    return sock
+
+  def send(self):
+    self.logger.info('Sending to carbon.')
+    try:
+      for met in self.data:
+        self.logger.debug(met)
+      self.sock.sendall('\n'.join(['%s %s %s' % met for met in self.data]))
+    except socket.socket.error:
+      self.logger.error('Error send to carbon, trying to reconnect.')
+      self.sock = self._connect()
