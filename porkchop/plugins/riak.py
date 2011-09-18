@@ -35,7 +35,7 @@ class RiakPlugin(PorkchopPlugin):
     try:
       stats_url = self.config["riak"]["stats_url"]
     except:
-      stats_url = "http://localhost:5050/stats"
+      stats_url = "http://localhost:8098/stats"
 
     stats = json.loads(urllib2.urlopen(stats_url)).read()
 
