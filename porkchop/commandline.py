@@ -23,12 +23,17 @@ def get_logger(level = logging.INFO):
 def main():
   from server import GetHandler
   from porkchop.server import GetHandler, ThreadedHTTPServer
+  config_dir = '/etc/porkchop.d'
   plugin_dir = '/usr/share/porkchop/plugins'
   listen_address = ''
   listen_port = 5000
 
   parser = OptionParser()
-  parser.add_option('-d', dest='plugindir',
+  parser.add_option('-c', dest='config_dir',
+                    default=config_dir,
+                    help='Load configs from DIR (default: %s)' % config_dir,
+                    metavar='DIR')
+  parser.add_option('-d', dest='plugin_dir',
                     default=plugin_dir,
                     help='Load plugins from DIR (default: %s)' % plugin_dir,
                     metavar='DIR')
@@ -51,7 +56,7 @@ def main():
   else:
     logger = get_logger()
 
-  PorkchopPluginHandler(options.plugindir)
+  PorkchopPluginHandler(options.config_dir, options.plugin_dir)
   server = ThreadedHTTPServer((options.listen_address, options.listen_port),
                               GetHandler)
   server.serve_forever()

@@ -4,16 +4,31 @@ import time
 import porkchop.plugins
 
 class PorkchopPlugin(object):
-  _lastrefresh = 0
+  config_file = None
   _data = {}
+  _lastrefresh = 0
 
   def __init__(self):
     self.refresh = 60
+
+  def get_config(self):
+    import ConfigParser
+
+    config = {}
+    cp = ConfigParser.ConfigParser()
+    cp.read(self.config_file)
+    for s in cp.sections():
+      config.setdefault(s, {})
+      for o in cp.options(s):
+        config[s][o] = cp.get(s, o)
+
+    return config
 
   @property
   def data(self):
     if self.should_refresh():
       self.__class__._lastrefresh = time.time()
+      self.config = self.get_config()
       self.data = self.get_data()
 
     return self.__class__._data
@@ -35,7 +50,8 @@ class PorkchopPlugin(object):
 class PorkchopPluginHandler(object):
   plugins = {}
 
-  def __init__(self, directory = None):
+  def __init__(self, config_dir, directory = None):
+    self.config_dir = config_dir
     PorkchopPluginHandler.plugins.update(self.load_plugins(os.path.dirname(porkchop.plugins.__file__)))
 
     if directory:
@@ -50,6 +66,8 @@ class PorkchopPluginHandler(object):
         module_name = os.path.splitext(os.path.split(infile)[1])[0]
         plugins[module_name] = self.str_to_obj('%s.%sPlugin' % (module_name,
           module_name.capitalize()))
+        plugins[module_name].config_file = os.path.join(self.config_dir,
+          '%s.ini' % module_name)
 
     return plugins
 
