@@ -1,0 +1,3 @@
+[submodule "porkchop/plugins"]
+	path = porkchop/plugins
+	url = git@github.com:disqus/porkchop-plugins.git
