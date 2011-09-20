@@ -1,4 +1,5 @@
 import logging
+import socket
 from optparse import OptionParser
 
 from porkchop.plugin import PorkchopPluginHandler
@@ -63,7 +64,6 @@ def main():
 
 def collector():
   import requests
-  import socket
   import sys
   import time
 
@@ -150,7 +150,6 @@ class Carbon(object):
       self.logger.fatal('Unable to connect to carbon.')
 
   def _connect(self):
-    import socket
     self.logger.info('Connecting to carbon on %s:%d', self.host, self.port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((self.host, self.port))
