@@ -1,10 +1,11 @@
 import socket
 import struct
+import time
 import cPickle
 
 class Carbon(object):
   def __init__(self, host, port, logger):
-    self.data = []
+    self.data = {}
     self.host = host
     self.port = port
     self.logger = logger
@@ -13,17 +14,26 @@ class Carbon(object):
     except socket.error:
       self.logger.fatal('Unable to connect to carbon.')
 
-  def _connect(self):
+  def _connect(self, waittime=5):
     self.logger.info('Connecting to carbon on %s:%d', self.host, self.port)
-    sock.connect((self.host, self.port))
+    try:
+      sock = socket.socket()
+      sock.connect((self.host, self.port))
+    except socket.error:
+      self.logger.info('Unable to connect to carbon, retrying in %d seconds', waittime)
+      time.sleep(waittime)
+      self._connect(waittime + 5)
 
     return sock
 
   def _send(self, data):
-    self.logger.info('Sending %d metrics to carbon.', len(data))
-    self.sock.sendall(self.serialize(data))
+    try:
+      self.logger.info('Sending %d metrics to carbon.', len(data))
+      self.sock.sendall(self._serialize(data))
+    except socket.error:
+      raise
 
-  def _serialize(data):
+  def _serialize(self, data):
     serialized = cPickle.dumps(data, protocol=-1)
     prefix = struct.pack('!L', len(serialized))
     return prefix + serialized
@@ -50,3 +60,13 @@ class Carbon(object):
             # we failed to send, so put it back in the stack and try later
             for ent in to_send:
               self.data[ent[0]].append(ent[1])
+
+    try:
+      self._send(to_send)
+    except socket.error:
+      self.logger.error('Error sending to carbon, trying to reconnect.')
+      self.sock = self._connect()
+
+      # we failed to send, so put it back in the stack and try later
+      for ent in to_send:
+        self.data[ent[0]].append(ent[1])

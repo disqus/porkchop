@@ -70,7 +70,7 @@ def collector():
   from porkchop.backend import Carbon
 
   carbon_host = 'localhost'
-  carbon_port = 2003
+  carbon_port = 2004
   porkchop_url = 'http://localhost:5000/'
 
   interval = 10
@@ -121,22 +121,23 @@ def collector():
       logger.debug('Fetching porkchop data from %s', options.porkchop_url)
       r = requests.get(options.porkchop_url)
       r.raise_for_status()
-      lines = []
-      now = int(time.time())
-      for line in r.content.strip('\n').splitlines():
-        (key, val) = line.lstrip('/').split(' ', 1)
-        key = '.'.join([options.prefix, key.replace('/', '.')])
-        try:
-          if not options.noop:
-            carbon.data.setdefault(key, [])
-            carbon.data[key].append((coerce_number(val), now))
-        except:
-          pass
-
-      if not options.noop:
-        carbon.send()
     except:
       logger.error('Got bad response code from porkchop: %s', sys.exc_info()[1])
+
+    lines = []
+    now = int(time.time())
+    for line in r.content.strip('\n').splitlines():
+      (key, val) = line.lstrip('/').split(' ', 1)
+      key = '.'.join([options.prefix, key.replace('/', '.')])
+      try:
+        if not options.noop:
+          carbon.data.setdefault(key, [])
+          carbon.data[key].append((now, coerce_number(val)))
+      except:
+        pass
+
+    if not options.noop:
+      carbon.send()
 
     logger.debug('Sleeping for %d', options.interval)
     time.sleep(options.interval)
