@@ -137,31 +137,3 @@ def collector():
 
     logger.debug('Sleeping for %d', options.interval)
     time.sleep(options.interval)
-
-class Carbon(object):
-  def __init__(self, host, port, logger):
-    self.data = []
-    self.host = host
-    self.port = port
-    self.logger = logger
-    try:
-      self.sock = self._connect()
-    except socket.error:
-      self.logger.fatal('Unable to connect to carbon.')
-
-  def _connect(self):
-    self.logger.info('Connecting to carbon on %s:%d', self.host, self.port)
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((self.host, self.port))
-
-    return sock
-
-  def send(self):
-    self.logger.info('Sending to carbon.')
-    try:
-      for met in self.data:
-        self.logger.debug(met)
-      self.sock.sendall('\n'.join(['%s %s %s' % met for met in self.data]))
-    except socket.socket.error:
-      self.logger.error('Error send to carbon, trying to reconnect.')
-      self.sock = self._connect()
