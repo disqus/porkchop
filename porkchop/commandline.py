@@ -10,8 +10,8 @@ def coerce_number(s):
   except:
     return float(s)
 
-def get_logger(level = logging.INFO):
-  logger = logging.getLogger('porkchop')
+def get_logger(name='porkchop', level=logging.INFO):
+  logger = logging.getLogger(name)
   logger.setLevel(logging.DEBUG)
   ch = logging.StreamHandler()
   ch.setLevel(level)
@@ -109,9 +109,9 @@ def collector():
   (options, args) = parser.parse_args()
 
   if options.verbose:
-    logger = get_logger(logging.DEBUG)
+    logger = get_logger('porkchop-collector', logging.DEBUG)
   else:
-    logger = get_logger()
+    logger = get_logger('porkchop-collector')
 
   if not options.noop:
     carbon = Carbon(options.carbon_host, options.carbon_port, logger)
