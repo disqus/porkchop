@@ -34,7 +34,7 @@ class Carbon(object):
     to_send = []
 
     for mn in self.data.keys():
-      for datapoint in self.data[mn]:
+      while len(self.data[mn]) > 0:
         l = len(to_send)
         if l < buf_sz:
           to_send.append((mn, self.data[mn].pop()))

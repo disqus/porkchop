@@ -67,6 +67,8 @@ def collector():
   import sys
   import time
 
+  from porkchop.backend import Carbon
+
   carbon_host = 'localhost'
   carbon_port = 2003
   porkchop_url = 'http://localhost:5000/'
@@ -126,7 +128,8 @@ def collector():
         key = '.'.join([options.prefix, key.replace('/', '.')])
         try:
           if not options.noop:
-            carbon.data.append((key, coerce_number(val), now))
+            carbon.data.setdefault(key, [])
+            carbon.data[key].append((coerce_number(val), now))
         except:
           pass
 
