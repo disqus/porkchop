@@ -28,8 +28,7 @@ class Carbon(object):
 
   def _send(self, data):
     try:
-      self.logger.info('Sending %d metrics to carbon.', len(data))
-      self.sock.sendall(self._serialize(data))
+      self.sock.sendall(self._serialize(data.items()))
     except socket.error:
       raise
 
@@ -41,18 +40,20 @@ class Carbon(object):
   def send(self):
     """ self.data format: {metric_name: [(t1, val1), (t2, val2)]} """
     buf_sz = 500
-    to_send = []
+    to_send = {}
 
     for mn in self.data.keys():
       while len(self.data[mn]) > 0:
         l = len(to_send)
         if l < buf_sz:
-          to_send.append((mn, self.data[mn].pop()))
+          to_send.setdefault(mn, [])
+          to_send[mn].append(self.data[mn].pop())
         else:
           try:
             self._send(to_send)
-            to_send = []
-            to_send.append((mn, self.data[mn].pop()))
+            to_send = {}
+            to_send.setdefault(mn, [])
+            to_send[mn].append(self.data[mn].pop())
           except socket.error:
             self.logger.error('Error sending to carbon, trying to reconnect.')
             self.sock = self._connect()

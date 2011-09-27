@@ -71,6 +71,7 @@ def collector():
 
   carbon_host = 'localhost'
   carbon_port = 2004
+  data = {}
   porkchop_url = 'http://localhost:5000/'
 
   interval = 10
@@ -129,15 +130,20 @@ def collector():
     for line in r.content.strip('\n').splitlines():
       (key, val) = line.lstrip('/').split(' ', 1)
       key = '.'.join([options.prefix, key.replace('/', '.')])
+      data.setdefault(key, [])
+
       try:
+        data[key].append((now, coerce_number(val)))
+
+        for met in data.keys():
+          for datapoint in data[met]:
+            logger.debug('Sending: %s %s %s', met, datapoint[0], datapoint[1])
+
         if not options.noop:
-          carbon.data.setdefault(key, [])
-          carbon.data[key].append((now, coerce_number(val)))
+          carbon.data = data
+          carbon.send()
       except:
         pass
-
-    if not options.noop:
-      carbon.send()
 
     logger.debug('Sleeping for %d', options.interval)
     time.sleep(options.interval)
