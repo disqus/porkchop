@@ -49,10 +49,12 @@ class GetHandler(BaseHTTPRequestHandler):
     try:
       if module:
         plugin = PorkchopPluginHandler.plugins[module]()
+        self.log_message('Calling plugin: %s' % module)
         data.update({module: plugin.data})
       else:
         for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
           try:
+            self.log_message('Calling plugin: %s' % plugin_name)
             data.update({plugin_name: plugin().data})
           except:
             self.log_error('Error loading plugin: name=%s exception=%s', plugin_name, sys.exc_info())
