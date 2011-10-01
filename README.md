@@ -54,6 +54,9 @@ Installation
 
 or
 
+    git clone git://github.com/disqus/porkchop.git
+    cd porkchop
+    git submodule init && git submodule update
     python setup.py install
 
 
