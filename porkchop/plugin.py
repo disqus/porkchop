@@ -29,8 +29,8 @@ class PorkchopPlugin(object):
   def data(self):
     if self.should_refresh():
       self.config = self.get_config()
-      self.data = self.get_data()
       self.__class__._lastrefresh = time.time()
+      self.data = self.get_data()
 
     return self.__class__._data
 
