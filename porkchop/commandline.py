@@ -10,7 +10,7 @@ def coerce_number(s):
   except:
     return float(s)
 
-def get_logger(name='porkchop', level=logging.INFO):
+def get_logger(name, level=logging.INFO):
   logger = logging.getLogger(name)
   logger.setLevel(logging.DEBUG)
   ch = logging.StreamHandler()
@@ -45,17 +45,8 @@ def main():
                     default=listen_port,
                     help='Bind to PORT (default: %d)' % listen_port,
                     metavar='PORT')
-  parser.add_option('-v', dest='verbose',
-                    default=False,
-                    help='Verbose logging',
-                    action='store_true')
 
   (options, args) = parser.parse_args()
-
-  if options.verbose:
-    logger = get_logger(logging.DEBUG)
-  else:
-    logger = get_logger()
 
   PorkchopPluginHandler(options.config_dir, options.plugin_dir)
   server = ThreadedHTTPServer((options.listen_address, options.listen_port),
