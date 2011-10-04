@@ -5,6 +5,7 @@ import porkchop.plugins
 
 class PorkchopPlugin(object):
   config_file = None
+  _cache = None
   _data = {}
   _lastrefresh = 0
 
@@ -27,9 +28,9 @@ class PorkchopPlugin(object):
   @property
   def data(self):
     if self.should_refresh():
-      self.__class__._lastrefresh = time.time()
       self.config = self.get_config()
       self.data = self.get_data()
+      self.__class__._lastrefresh = time.time()
 
     return self.__class__._data
 
@@ -52,10 +53,11 @@ class PorkchopPluginHandler(object):
 
   def __init__(self, config_dir, directory = None):
     self.config_dir = config_dir
-    PorkchopPluginHandler.plugins.update(self.load_plugins(os.path.dirname(porkchop.plugins.__file__)))
 
     if directory:
-      PorkchopPluginHandler.plugins.update(self.load_plugins(directory))
+      self.__class__.plugins.update(self.load_plugins(directory))
+
+    self.__class__.plugins.update(self.load_plugins(os.path.dirname(porkchop.plugins.__file__)))
 
   def load_plugins(self, directory):
     plugins = {}
