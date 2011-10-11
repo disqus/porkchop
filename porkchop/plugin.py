@@ -1,7 +1,10 @@
+from collections import defaultdict
 import glob, os, sys
+import socket
 import time
 
 import porkchop.plugins
+from porkchop.util import PorkchopUtil
 
 class PorkchopPlugin(object):
   config_file = None
@@ -12,23 +15,10 @@ class PorkchopPlugin(object):
   def __init__(self):
     self.refresh = 60
 
-  def get_config(self):
-    import ConfigParser
-
-    config = {}
-    cp = ConfigParser.ConfigParser()
-    cp.read(self.config_file)
-    for s in cp.sections():
-      config.setdefault(s, {})
-      for o in cp.options(s):
-        config[s][o] = cp.get(s, o)
-
-    return config
-
   @property
   def data(self):
     if self.should_refresh():
-      self.config = self.get_config()
+      self.config = PorkchopUtil.parse_config(self.config_file)
       self.data = self.get_data()
 
     return self.__class__._data
@@ -39,6 +29,12 @@ class PorkchopPlugin(object):
     self.__class__._lastrefresh = time.time()
     self.__class__._data['refreshtime'] = int(self.__class__._lastrefresh)
 
+  def gendict(self):
+    return defaultdict(self.gendict)
+
+  def rateof(self, a, b, ival):
+    return (float(b) - float(a)) / ival if (float(b) - float(a)) > 0 else 0
+
   def should_refresh(self):
     if self.__class__._lastrefresh != 0:
       if time.time() - self.__class__._lastrefresh > self.refresh:
@@ -48,11 +44,31 @@ class PorkchopPlugin(object):
     else:
       return True
 
+  def tcp_socket(self, host, port):
+    try:
+      sock = socket.socket()
+      sock.connect((host, port))
+    except socket.error:
+      raise
+
+    return sock
+
+  def unix_socket(self, path):
+    try:
+      sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+      sock.connect(path)
+    except socket.error:
+      raise
+
+    return sock
+
 class PorkchopPluginHandler(object):
   plugins = {}
 
   def __init__(self, config_dir, directory = None):
     self.config_dir = config_dir
+    self.config = PorkchopUtil.parse_config(os.path.join(self.config_dir,
+      'porkchop.ini'))
 
     if directory:
       self.__class__.plugins.update(self.load_plugins(directory))
@@ -63,9 +79,15 @@ class PorkchopPluginHandler(object):
     plugins = {}
     sys.path.insert(0, directory)
 
+    try:
+      to_load = [p.strip() for p in self.config['porkchop']['plugins'].split(',')]
+    except:
+      to_load = []
+
     for infile in glob.glob(os.path.join(directory, '*.py')):
-      if not os.path.basename(infile) == '__init__.py':
-        module_name = os.path.splitext(os.path.split(infile)[1])[0]
+      module_name = os.path.splitext(os.path.split(infile)[1])[0]
+      if os.path.basename(infile) != '__init__.py' and \
+          (not to_load or module_name in to_load):
         plugins[module_name] = self.str_to_obj('%s.%sPlugin' % (module_name,
           module_name.capitalize()))
         plugins[module_name].config_file = os.path.join(self.config_dir,
