@@ -45,10 +45,10 @@ class GetHandler(BaseHTTPRequestHandler):
       except KeyError:
         fmt = 'text'
 
-      if self.headers.get('x-porkchop-refresh', False):
-        force_refresh = True
-      else:
-        force_refresh = False
+    if self.headers.get('x-porkchop-refresh', False):
+      force_refresh = True
+    else:
+      force_refresh = False
 
     module = path.split('/')[1]
 
