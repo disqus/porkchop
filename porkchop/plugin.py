@@ -14,6 +14,7 @@ class PorkchopPlugin(object):
 
   def __init__(self):
     self.refresh = 60
+    self.force_refresh = False
 
   @property
   def data(self):
@@ -28,6 +29,7 @@ class PorkchopPlugin(object):
     self.__class__._data = value
     self.__class__._lastrefresh = time.time()
     self.__class__._data['refreshtime'] = int(self.__class__._lastrefresh)
+    self.force_refresh = False
 
   def gendict(self):
     return defaultdict(self.gendict)
@@ -36,6 +38,9 @@ class PorkchopPlugin(object):
     return (float(b) - float(a)) / ival if (float(b) - float(a)) > 0 else 0
 
   def should_refresh(self):
+    if self.force_refresh:
+      return True
+
     if self.__class__._lastrefresh != 0:
       if time.time() - self.__class__._lastrefresh > self.refresh:
         return True

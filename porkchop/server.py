@@ -45,17 +45,24 @@ class GetHandler(BaseHTTPRequestHandler):
       except KeyError:
         fmt = 'text'
 
+      if self.headers.get('x-porkchop-refresh', False):
+        force_refresh = True
+      else:
+        force_refresh = False
+
     module = path.split('/')[1]
 
     try:
       if module:
         plugin = PorkchopPluginHandler.plugins[module]()
-        self.log_message('Calling plugin: %s' % module)
+        plugin.force_refresh = force_refresh
+        self.log_message('Calling plugin: %s with force=%s' % (module, force_refresh))
         data.update({module: plugin.data})
       else:
         for plugin_name, plugin in PorkchopPluginHandler.plugins.iteritems():
           try:
-            self.log_message('Calling plugin: %s' % plugin_name)
+            plugin.force_refresh = force_refresh
+            self.log_message('Calling plugin: %s with force=%s' % (plugin_name, force_refresh))
             data.update({plugin_name: plugin().data})
           except:
             self.log_error('Error loading plugin: name=%s exception=%s', plugin_name, sys.exc_info())

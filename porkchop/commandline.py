@@ -65,7 +65,7 @@ def collector():
   data = {}
   porkchop_url = 'http://localhost:5000/'
 
-  interval = 10
+  interval = 60
   prefix = 'porkchop.%s' % socket.gethostname().split('.')[0].replace('.','_')
 
   parser = OptionParser()
@@ -109,15 +109,15 @@ def collector():
     carbon = Carbon(options.carbon_host, options.carbon_port, logger)
 
   while True:
+    now = int(time.time())
     try:
       logger.debug('Fetching porkchop data from %s', options.porkchop_url)
-      r = requests.get(options.porkchop_url)
+      r = requests.get(options.porkchop_url, headers={'x-porkchop-refresh': 'true'})
       r.raise_for_status()
     except:
       logger.error('Got bad response code from porkchop: %s', sys.exc_info()[1])
 
     lines = []
-    now = int(time.time())
     for line in r.content.strip('\n').splitlines():
       (key, val) = line.lstrip('/').split(' ', 1)
       key = '.'.join([options.prefix, key.replace('/', '.')])
@@ -136,5 +136,7 @@ def collector():
       except:
         pass
 
-    logger.debug('Sleeping for %d', options.interval)
-    time.sleep(options.interval)
+    sleep_time = options.interval - (int(time.time()) - now)
+    if sleep_time > 0:
+      logger.info('Sleeping for %d seconds', sleep_time)
+      time.sleep(sleep_time)
