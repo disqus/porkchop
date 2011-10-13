@@ -37,12 +37,9 @@ class GetHandler(BaseHTTPRequestHandler):
       if fmt not in formats.keys(): fmt = 'text'
     except ValueError:
       path = request.path
-      try:
-        if self.headers['accept'] == 'application/json':
-          fmt = 'json'
-        else:
-          fmt = 'text'
-      except KeyError:
+      if self.headers.get('accept', False) == 'application/json':
+        fmt = 'json'
+      else:
         fmt = 'text'
 
     if self.headers.get('x-porkchop-refresh', False):
