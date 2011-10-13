@@ -93,10 +93,13 @@ class PorkchopPluginHandler(object):
       module_name = os.path.splitext(os.path.split(infile)[1])[0]
       if os.path.basename(infile) != '__init__.py' and \
           (not to_load or module_name in to_load):
-        plugins[module_name] = self.str_to_obj('%s.%sPlugin' % (module_name,
-          module_name.capitalize()))
-        plugins[module_name].config_file = os.path.join(self.config_dir,
-          '%s.ini' % module_name)
+        try:
+          plugins[module_name] = self.str_to_obj('%s.%sPlugin' % (module_name,
+            module_name.capitalize()))
+          plugins[module_name].config_file = os.path.join(self.config_dir,
+            '%s.ini' % module_name)
+        except ImportError:
+          pass
 
     return plugins
 
