@@ -60,7 +60,11 @@ class GetHandler(BaseHTTPRequestHandler):
           try:
             plugin.force_refresh = force_refresh
             self.log_message('Calling plugin: %s with force=%s' % (plugin_name, force_refresh))
-            data.update({plugin_name: plugin().data})
+            # if the plugin has no data,
+            # it'll only have one key:
+            # refreshtime
+            if len(plugin().data) > 1:
+              data.update({plugin_name: plugin().data})
           except:
             self.log_error('Error loading plugin: name=%s exception=%s', plugin_name, sys.exc_info())
 
