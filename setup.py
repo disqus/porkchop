@@ -23,7 +23,7 @@ setup(name='porkchop',
   packages=find_packages(),
   include_package_data=True,
   zip_safe=False,
-  install_requires=['requests'],
+  install_requires=['requests', 'setuptools'],
   entry_points={
     'console_scripts': [
       'porkchop = porkchop.commandline:main',
