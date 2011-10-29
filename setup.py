@@ -3,7 +3,7 @@
 import glob
 from setuptools import setup, find_packages
 
-version = '0.6'
+version = '0.7.1'
 
 setup(name='porkchop',
   version=version,
