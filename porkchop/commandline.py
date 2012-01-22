@@ -48,6 +48,7 @@ def main():
 
   (options, args) = parser.parse_args()
 
+  socket.setdefaulttimeout(3)
   PorkchopPluginHandler(options.config_dir, options.plugin_dir)
   server = ThreadedHTTPServer((options.listen_address, options.listen_port),
                               GetHandler)
