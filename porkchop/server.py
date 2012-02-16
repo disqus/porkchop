@@ -86,8 +86,8 @@ class GetHandler(BaseHTTPRequestHandler):
                 self.wfile.write(self.format_output(fmt, data) + '\n')
             else:
                 raise Exception('Unable to load any plugins')
-        except:
-            self.log_error('Error: %s', sys.exc_info())
+        except Exception, e:
+            self.log_error('Error: %s\n%s', e, traceback.format_exc())
             self.send_response(404)
             self.send_header('Content-Type', formats[fmt])
             self.end_headers()
