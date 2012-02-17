@@ -75,8 +75,12 @@ class PorkchopPlugin(object):
     def rateof(self, a, b, ival=None):
         if ival is None:
             ival = self.delta
+
+        a = float(a)
+        b = float(b)
+
         try:
-            return (float(b) - float(a)) / ival if (float(b) - float(a)) > 0 else 0
+            return (b - a) / ival if (b - a) > 0 else 0
         except ZeroDivisionError:
             if a:
                 return -a
