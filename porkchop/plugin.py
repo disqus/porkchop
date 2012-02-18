@@ -16,6 +16,11 @@ import porkchop.plugins
 from porkchop.util import PorkchopUtil
 
 
+class InfiniteDict(defaultdict):
+    def __init__(self, type=None, *args, **kwargs):
+        super(InfiniteDict, self).__init__(type or self.__class__)
+
+
 class PorkchopPlugin(object):
     config_file = None
     __delta = None
@@ -32,7 +37,7 @@ class PorkchopPlugin(object):
     def data(self):
         if self.should_refresh():
             self.config = PorkchopUtil.parse_config(self.config_file)
-            if not self.prev_data:
+            if self.prev_data is None:
                 self.__class__.__delta = 1
                 self.prev_data = self.get_data()
                 time.sleep(1)
@@ -70,7 +75,7 @@ class PorkchopPlugin(object):
         return data
 
     def gendict(self):
-        return defaultdict(self.gendict)
+        return InfiniteDict()
 
     def rateof(self, a, b, ival=None):
         if ival is None:

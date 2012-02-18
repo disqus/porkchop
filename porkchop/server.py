@@ -5,11 +5,9 @@ porkchop.server
 :copyright: (c) 2011-2012 DISQUS.
 :license: Apache License 2.0, see LICENSE for more details.
 """
-from collections import defaultdict
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
 from SocketServer import ThreadingMixIn
-import sys
 import traceback
 import urlparse
 
@@ -28,7 +26,7 @@ class GetHandler(BaseHTTPRequestHandler):
 
         def path_helper(data, path, results):
             for key, val in data.iteritems():
-                if type(val) in [dict, defaultdict]:
+                if isinstance(val,  dict):
                     path_helper(val, '/'.join((path, key)), results)
                 else:
                     results.append(('%s %s' % (('/'.join((path, key)))\
