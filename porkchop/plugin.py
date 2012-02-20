@@ -85,7 +85,7 @@ class PorkchopPlugin(object):
         b = float(b)
 
         try:
-            return (b - a) / ival if (b - a) > 0 else 0
+            return (b - a) / ival if (b - a) != 0 else 0
         except ZeroDivisionError:
             if a:
                 return -a
