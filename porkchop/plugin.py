@@ -7,6 +7,8 @@ porkchop.plugin
 """
 from collections import defaultdict
 import glob
+import imp
+import inspect
 import os
 import sys
 import socket
@@ -139,27 +141,17 @@ class PorkchopPluginHandler(object):
             if os.path.basename(infile) != '__init__.py' and \
                 (not to_load or module_name in to_load):
                 try:
-                    plugins[module_name] = self.str_to_obj('%s.%sPlugin' % (module_name,
-                        module_name.capitalize()))
-                    plugins[module_name].config_file = os.path.join(self.config_dir,
-                        '%s.ini' % module_name)
+                    module = imp.load_source(module_name, infile)
+                    for k, v in inspect.getmembers(module):
+                        if inspect.isclass(v) and issubclass(v, PorkchopPlugin):
+                            if hasattr(v, '__metric_name__'):
+                                plugin_name = v.__metric_name__
+                            else:
+                                plugin_name = k
+                            plugins[plugin_name] = v
+                            plugins[plugin_name].config_file = os.path.join(self.config_dir,
+                                '%s.ini' % module_name)
                 except ImportError:
                     pass
 
         return plugins
-
-    def str_to_obj(self, astr):
-        try:
-            return globals()[astr]
-        except KeyError:
-            try:
-                __import__(astr)
-                mod = sys.modules[astr]
-                return mod
-            except ImportError:
-                module, _, basename = astr.rpartition('.')
-            if module:
-                mod = self.str_to_obj(module)
-                return getattr(mod, basename)
-            else:
-                raise
