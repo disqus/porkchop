@@ -7,12 +7,13 @@ porkchop.plugin
 """
 from collections import defaultdict
 import glob
+import imp
+import inspect
 import os
 import sys
 import socket
 import time
 
-import porkchop.plugins
 from porkchop.util import PorkchopUtil
 
 
@@ -123,7 +124,11 @@ class PorkchopPluginHandler(object):
         if directory:
             self.__class__.plugins.update(self.load_plugins(directory))
 
-        self.__class__.plugins.update(self.load_plugins(os.path.dirname(porkchop.plugins.__file__)))
+        self.__class__.plugins.update(
+            self.load_plugins(
+                os.path.join(os.path.dirname(__file__), 'plugins')
+            )
+        )
 
     def load_plugins(self, directory):
         plugins = {}
@@ -136,30 +141,34 @@ class PorkchopPluginHandler(object):
 
         for infile in glob.glob(os.path.join(directory, '*.py')):
             module_name = os.path.splitext(os.path.split(infile)[1])[0]
-            if os.path.basename(infile) != '__init__.py' and \
-                (not to_load or module_name in to_load):
-                try:
-                    plugins[module_name] = self.str_to_obj('%s.%sPlugin' % (module_name,
-                        module_name.capitalize()))
-                    plugins[module_name].config_file = os.path.join(self.config_dir,
-                        '%s.ini' % module_name)
-                except ImportError:
-                    pass
+
+            if os.path.basename(infile) == '__init__.py':
+                continue
+            if to_load and module_name not in to_load:
+                continue
+
+            try:
+                module = imp.load_source(module_name, infile)
+                for namek, klass in inspect.getmembers(module):
+                    if inspect.isclass(klass) \
+                       and issubclass(klass, PorkchopPlugin) \
+                       and klass is not PorkchopPlugin:
+
+                        if hasattr(klass, '__metric_name__'):
+                            plugin_name = klass.__metric_name__
+                        else:
+                            plugin_name = module_name
+
+                        plugins[plugin_name] = klass
+                        plugins[plugin_name].config_file = os.path.join(
+                            self.config_dir,
+                            '%s.ini' % plugin_name
+                        )
+
+                        # Only one plugin per module.
+                        break
+
+            except ImportError:
+                pass
 
         return plugins
-
-    def str_to_obj(self, astr):
-        try:
-            return globals()[astr]
-        except KeyError:
-            try:
-                __import__(astr)
-                mod = sys.modules[astr]
-                return mod
-            except ImportError:
-                module, _, basename = astr.rpartition('.')
-            if module:
-                mod = self.str_to_obj(module)
-                return getattr(mod, basename)
-            else:
-                raise
