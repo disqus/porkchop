@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-version = '0.8.0'
+version = '0.9.0'
 
 setup(name='porkchop',
   version=version,
