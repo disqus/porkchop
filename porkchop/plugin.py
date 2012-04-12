@@ -162,7 +162,7 @@ class PorkchopPluginHandler(object):
                         plugins[plugin_name] = klass
                         plugins[plugin_name].config_file = os.path.join(
                             self.config_dir,
-                            '%s.ini' % module_name
+                            '%s.ini' % plugin_name
                         )
 
                         # Only one plugin per module.
