@@ -60,6 +60,11 @@ or
     python setup.py install
 
 
+Running Porkchop
+----------------
+
+    porkchop
+
 Writing Plugins
 ---------------
 
