@@ -29,10 +29,10 @@ class PorkchopPlugin(object):
     __cache = None
     __data = {}
     __lastrefresh = 0
+    refresh = 60
+    force_refresh = False
 
     def __init__(self, handler):
-        self.refresh = 60
-        self.force_refresh = False
         self.handler = handler
 
     @property
