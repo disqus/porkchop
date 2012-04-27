@@ -60,7 +60,7 @@ class GetHandler(BaseHTTPRequestHandler):
 
         try:
             if module:
-                plugin = PorkchopPluginHandler.plugins[module]()
+                plugin = PorkchopPluginHandler.plugins[module](self)
                 plugin.force_refresh = force_refresh
                 self.log_message('Calling plugin: %s with force=%s' % (module, force_refresh))
                 data.update({module: plugin.data})
@@ -71,8 +71,9 @@ class GetHandler(BaseHTTPRequestHandler):
                         self.log_message('Calling plugin: %s with force=%s' % (plugin_name, force_refresh))
                         # if the plugin has no data, it'll only have one key:
                         # refreshtime
-                        if len(plugin().data) > 1:
-                            data.update({plugin_name: plugin().data})
+                        result = plugin(self).data
+                        if len(result) > 1:
+                            data.update({plugin_name: result})
                     except Exception, e:
                         self.log_error('Error loading plugin: name=%s exception=%s, traceback=%s', plugin_name, e,
                                        traceback.format_exc())

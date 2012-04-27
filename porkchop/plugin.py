@@ -30,9 +30,10 @@ class PorkchopPlugin(object):
     __data = {}
     __lastrefresh = 0
 
-    def __init__(self):
+    def __init__(self, handler):
         self.refresh = 60
         self.force_refresh = False
+        self.handler = handler
 
     @property
     def data(self):
@@ -111,6 +112,9 @@ class PorkchopPlugin(object):
         sock.connect(path)
 
         return sock
+
+    def log_error(self, *args, **kwargs):
+        return self.handler.log_error(*args, **kwargs)
 
 
 class PorkchopPluginHandler(object):
