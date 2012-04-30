@@ -6,8 +6,8 @@ porkchop.server
 :license: Apache License 2.0, see LICENSE for more details.
 """
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import json
 from SocketServer import ThreadingMixIn
+import json
 import traceback
 import urlparse
 

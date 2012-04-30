@@ -21,3 +21,11 @@ class PorkchopUtil(object):
                 config[s][o] = cp.get(s, o)
 
         return config
+
+
+    @classmethod
+    def char_filter(s, w=WANTED):
+        import string
+
+        wanted = string.letters + string.digits + string.punctuation
+        return "".join(c for c in s if c in wanted and not c == '.')

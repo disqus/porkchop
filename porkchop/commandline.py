@@ -70,6 +70,7 @@ def collector():
     import time
 
     from porkchop.backend import Carbon
+    from porkchop.util import PorkchopUtil
 
     carbon_host = 'localhost'
     carbon_port = 2004
@@ -129,6 +130,7 @@ def collector():
 
         for line in r.content.strip('\n').splitlines():
             (key, val) = line.lstrip('/').split(' ', 1)
+            key = PorkchopUtil.filter(key)
             key = '.'.join([options.prefix, key.replace('/', '.')])
             data.setdefault(key, [])
 
