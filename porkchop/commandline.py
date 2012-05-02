@@ -130,7 +130,7 @@ def collector():
 
         for line in r.content.strip('\n').splitlines():
             (key, val) = line.lstrip('/').split(' ', 1)
-            key = PorkchopUtil.filter(key)
+            key = PorkchopUtil.char_filter(key)
             key = '.'.join([options.prefix, key.replace('/', '.')])
             data.setdefault(key, [])
 
