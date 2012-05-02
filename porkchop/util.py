@@ -24,7 +24,7 @@ class PorkchopUtil(object):
 
 
     @classmethod
-    def char_filter(s, w=WANTED):
+    def char_filter(s):
         import string
 
         wanted = string.letters + string.digits + string.punctuation
