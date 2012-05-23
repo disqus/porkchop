@@ -95,7 +95,7 @@ def collector():
                       metavar='URL')
     parser.add_option('-i', type='int', dest='interval',
                       default=interval,
-                      help='Fetch data at INTERVAL (default: %d)' % interval,
+                      help='Fetch data at INTERVAL seconds (default: %d)' % interval,
                       metavar='INTERVAL')
     parser.add_option('-n', dest='noop',
                       default=False,
@@ -123,7 +123,9 @@ def collector():
         now = int(time.time())
         try:
             logger.debug('Fetching porkchop data from %s', options.porkchop_url)
-            r = requests.get(options.porkchop_url, headers={'x-porkchop-refresh': 'true'})
+            r = requests.get(options.porkchop_url,
+                             timeout=options.interval,
+                             headers={'x-porkchop-refresh': 'true'})
             r.raise_for_status()
         except:
             logger.error('Got bad response code from porkchop: %s', sys.exc_info()[1])
