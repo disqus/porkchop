@@ -24,7 +24,7 @@ class InfiniteDict(defaultdict):
 
 class DotDict(defaultdict):
     def __init__(self):
-        defaultdict.__init__(self, dotDict)
+        defaultdict.__init__(self, DotDict)
     def __setitem__(self, key, value):
         keys = key.split('.')
         for key in keys[:-1]:
