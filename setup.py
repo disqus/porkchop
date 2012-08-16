@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-version = '0.9.0'
+version = '0.9.1'
 
 setup(name='porkchop',
   version=version,
@@ -15,8 +15,8 @@ setup(name='porkchop',
     'Topic :: System :: Networking :: Monitoring'
   ],
   keywords='',
-  author='Scott Smith',
-  author_email='scott@disqus.com',
+  author='DISQUS',
+  author_email='opensource@disqus.com',
   url='http://github.com/disqus/porkchop',
   license='Apache 2.0',
   packages=find_packages(),
