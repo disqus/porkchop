@@ -22,6 +22,16 @@ class InfiniteDict(defaultdict):
         super(InfiniteDict, self).__init__(type or self.__class__)
 
 
+class DotDict(defaultdict):
+    def __init__(self):
+        defaultdict.__init__(self, DotDict)
+    def __setitem__(self, key, value):
+        keys = key.split('.')
+        for key in keys[:-1]:
+            self = self[key]
+        defaultdict.__setitem__(self, keys[-1], value)
+
+
 class PorkchopPlugin(object):
     config_file = None
     __delta = None
@@ -76,8 +86,11 @@ class PorkchopPlugin(object):
     def format_data(self, data):
         return data
 
-    def gendict(self):
+    def gendict(self, type='infinite'):
+        if type.lower() == 'dot':
+            return DotDict()
         return InfiniteDict()
+
 
     def rateof(self, a, b, ival=None):
         if ival is None:
