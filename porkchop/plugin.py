@@ -91,7 +91,6 @@ class PorkchopPlugin(object):
             return DotDict()
         return InfiniteDict()
 
-
     def rateof(self, a, b, ival=None):
         if ival is None:
             ival = self.delta
@@ -186,6 +185,8 @@ class PorkchopPluginHandler(object):
                         break
 
             except ImportError:
-                pass
+                print 'Unable to load plugin %r' % infile
+                import traceback
+                traceback.print_exc()
 
         return plugins
